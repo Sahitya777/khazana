@@ -45,7 +45,7 @@ const PortFolioDashboard = () => {
         </div>
         <div className='flex gap-4'>
             {investmentData.map((data,id:number)=>(
-                <div className='flex flex-col w-full bg-[#0070df33] p-4 pt-3 pb-3 rounded-xl mt-4'>
+                <div key={id} className='flex flex-col w-full bg-[#0070df33] p-4 pt-3 pb-3 rounded-xl mt-4'>
                     <div className='flex justify-between w-full pl-[14px] border-l-[2px] border-[#B2EFFF]'>
                         <div className='flex flex-col'>
                             <text>
