@@ -1,6 +1,6 @@
 import GrowthIcon from '@/assets/icons/growthIcon'
 import LossIcon from '@/assets/icons/lossIcon'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PerformanceMetrics from '../PerformanceMetrics'
 import OverlapAnalysis from '../OverlapAnalysis'
 import PortfolioComposition from '../PortfolioComposition'
@@ -33,6 +33,18 @@ const PortFolioDashboard = () => {
         }
     ]
     const [tabValue, settabValue] = useState<number>(0)
+
+    useEffect(()=>{
+        try {
+            const fetchInvestmentData=async()=>{
+
+            }
+            fetchInvestmentData()   
+        } catch (error) {
+            console.log(error,'err in investment data')
+        }
+    },[])
+
   return (
     <div className='ml-[200px] mt-20 p-8'>
         <div className='flex flex-col gap-3'>

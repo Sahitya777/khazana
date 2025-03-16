@@ -1,6 +1,5 @@
-"use client";
-import TooltipIcon from "@/assets/icons/tooltipIcon";
-import { Sankey, Tooltip, ResponsiveContainer } from "recharts";
+import React from 'react';
+import { Sankey, Tooltip, ResponsiveContainer } from 'recharts';
 
 const data = {
   nodes: [
@@ -51,17 +50,23 @@ const data = {
 
 const OverlapAnalysis = () => {
   return (
-    <div className="w-full p-6 bg-[#1B1A1A] text-white rounded-lg mb-8 mt-8">
+    <div className="w-full p-6 bg-[#1B1A1A] text-white rounded-lg">
       {/* Header */}
       <div className="flex gap-2 items-center">
         <h2 className="text-lg font-bold mb-4">Overlap Analysis</h2>
         <div className="mb-4">
-          <TooltipIcon />
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="#888888" strokeWidth="2" />
+            <text x="12" y="16" textAnchor="middle" fill="#888888" fontSize="12" fontWeight="bold">i</text>
+          </svg>
         </div>
       </div>
       <p className="text-sm mb-2 text-[#E7E7E7]">
-        Comparing: <b>Motilal Large Cap Fund</b> and{" "}
-        <b>Nippon Large Cap Fund</b>
+        Comparing: <b>ICICI Prudential Bluechip Fund, </b>
+        <b>HDFC Top 100 Fund, </b>
+        <b>SBI Bluechip Fund, </b>
+        <b>Axis Bluechip Fund</b> and {' '}
+        <b>Mirae Asset Large Cap Fund</b>
       </p>
 
       {/* Legend */}
@@ -81,53 +86,73 @@ const OverlapAnalysis = () => {
       </ul>
 
       {/* Sankey Chart */}
-      <ResponsiveContainer width="100%" height={400} style={{ padding: "16px" }}>
+      <ResponsiveContainer width="100%" height={400}>
         <Sankey
           data={data}
           node={({ x, y, width, height, index }) => {
             const nodeColor = data.nodes[index]?.fill || "#FFBF38";
-            const isLeftNode = x < 5; // Adjust based on positioning
-
+            const isLeftNode = index < 5; // First 4 nodes are funds (left side)
+            
             return (
               <g>
-                {/* Node Rectangle */}
+                {/* Vertical color bar */}
                 <rect
-                  x={x}
-                  y={y}
-                  width={width}
-                  height={height}
+                  x={isLeftNode ? x - width/2 : x + width/2}
+                  y={y-2}
+                  width={8}
+                  height={height+4}
                   fill={nodeColor}
-                  stroke={nodeColor}
-                  strokeWidth={1}
-                  rx={6}
-                  ry={6}
+                  rx={4}
+                  ry={4}
                 />
-
-                {/* Node Label */}
+                
+                {/* Fund box - only for left nodes */}
+                {isLeftNode && (
+                  <rect
+                    x={x - 140}
+                    y={y + height/2 - 25}
+                    width={130}
+                    height={50}
+                    fill={nodeColor}
+                    rx={6}
+                    ry={6}
+                  />
+                )}
+                
+                {/* Text label */}
                 <text
-                  x={isLeftNode ? x - 12 : x + width + 10} // Move label further from nodes
-                  y={y + height/3}
+                  x={isLeftNode ? x - 75 : x + 16}
+                  y={y + height/2 + 2}
                   fill="white"
-                  fontSize="12"
+                  fontSize={12}
                   fontWeight="bold"
-                  alignmentBaseline="middle"
-                  textAnchor={isLeftNode ? "end" : "start"}
-                  dy={5} // Slight vertical adjustment
+                  textAnchor={isLeftNode ? "middle" : "start"}
+                  dominantBaseline="middle"
                 >
-                  {data.nodes[index]?.name}
+                  {isLeftNode 
+                    ? data.nodes[index].name.length > 20 
+                      ? data.nodes[index].name.substring(0, 20) + "..." 
+                      : data.nodes[index].name
+                    : data.nodes[index].name}
                 </text>
               </g>
             );
           }}
           link={{
-            strokeOpacity: 0.4, // Semi-transparent links
+            stroke: "#333",
+            strokeOpacity: 0.7,
+            strokeWidth: 6,
+            fill: "none"
           }}
-          nodePadding={30}
-          nodeWidth={8}
+          nodePadding={20}
+          nodeWidth={4}
+          margin={{ top: 20, right: 180, bottom: 20, left: 150 }}
         >
           <Tooltip />
         </Sankey>
       </ResponsiveContainer>
+      
+      {/* Circular markers */}
     </div>
   );
 };

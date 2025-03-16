@@ -7,7 +7,13 @@ import UserSettings from "@/assets/userSettings";
 import React from "react";
 
 const Navbar = () => {
-  const navItems = ["Home", "Portfolio", "Mutual Funds", "Tools", "Transactions"];
+  const navItems = [
+    "Home",
+    "Portfolio",
+    "Mutual Funds",
+    "Tools",
+    "Transactions",
+  ];
 
   return (
     <div className="fixed top-0 h-20 p-6 bg-[#1B1A1A] w-full">
@@ -16,22 +22,26 @@ const Navbar = () => {
           <Logo />
           <div className="flex ml-32 gap-11">
             {navItems.map((navItem: string, id: number) => (
-              <span
-                key={id}
-                className={`text-[#D1D1D1] cursor-pointer inline-block ${
-                  navItem === "Portfolio"
-                    ? "text-[#F6F6F6] border-b-[2px] border-[#0070DF]"
-                    : "hover:text-white transition"
-                }`}
-              >
-                {navItem}
-              </span>
+              <div key={id} className="relative flex items-center">
+                <span
+                  className={`text-[#D1D1D1] cursor-pointer ${
+                    navItem === "Portfolio"
+                      ? "text-[#F6F6F6]"
+                      : "hover:text-white transition"
+                  }`}
+                >
+                  {navItem}
+                </span>
+                {navItem === "Portfolio" && (
+                  <div className="absolute bottom-[-23px] left-0 w-full h-[2px] bg-[#0070DF]"></div>
+                )}
+              </div>
             ))}
           </div>
         </div>
         <div className="flex gap-10 cursor-pointer mr-5">
-          <OverallLogo/>
-          <ExitLogo/>
+          <OverallLogo />
+          <ExitLogo />
         </div>
       </div>
     </div>
