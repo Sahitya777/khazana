@@ -81,14 +81,14 @@ const PerformanceMetrics = () => {
             horizontal={true}
             vertical={false}
           />
-<XAxis
-  tickLine={false}
-  padding={{ left: 35, right: 35 }}
-  interval={0}
-  dataKey="date"
-  stroke="#ccc"
-  dy={8} 
-/>
+          <XAxis
+            tickLine={false}
+            padding={{ left: 35, right: 35 }}
+            interval={0}
+            dataKey="date"
+            stroke="#ccc"
+            dy={8}
+          />
           <Tooltip
             content={({ active, payload }) => {
               if (active && payload && payload.length) {

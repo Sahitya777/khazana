@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Sankey, Tooltip, ResponsiveContainer } from 'recharts';
 
 const data = {
@@ -9,7 +9,7 @@ const data = {
     { name: "Axis Bluechip Fund", fill: "#4caf50" },
     { name: "Mirae Asset Large Cap Fund", fill: "#ff5722" },
 
-    { name: "Reliance Industries (RIL)", fill: "#008000" },
+    { name: "Reliance Industries", fill: "#008000" },
     { name: "HDFC Bank", fill: "#c4a000" },
     { name: "TCS", fill: "#00bcd4" },
     { name: "Infosys", fill: "#8a2be2" },
@@ -49,6 +49,68 @@ const data = {
 };
 
 const OverlapAnalysis = () => {
+  // State to track selected fund index
+  const [selectedFund, setSelectedFund] = useState<number | null>(null);
+
+  // Function to handle fund selection
+  const handleFundClick = (index: number) => {
+    // Toggle selection
+    setSelectedFund(selectedFund === index ? null : index);
+  };
+
+  // Function to check if a link is associated with selected fund
+  const isLinkHighlighted = (linkData: any) => {
+    return selectedFund !== null && linkData.source === selectedFund;
+  };
+
+  // Function to check if a stock (target node) is associated with selected fund
+  const isStockHighlighted = (nodeIndex: number) => {
+    if (selectedFund === null || nodeIndex < 5) return false; // Only apply to right side nodes (stocks)
+    
+    // Check if this stock is linked to the selected fund
+    return data.links.some(link => 
+      link.source === selectedFund && link.target === nodeIndex
+    );
+  };
+
+  // Function to create wrapped text in SVG
+  const createWrappedText = (x: number, y: number, text: string, width: number, fontSize: number) => {
+    const words = text.split(' ');
+    const lineHeight = fontSize * 1.2;
+    let line = '';
+    let lines = [];
+    
+    words.forEach((word) => {
+      const testLine = line + (line ? ' ' : '') + word;
+      // Check if adding this word would exceed the width
+      if (testLine.length * (fontSize * 0.6) > width) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = testLine;
+      }
+    });
+    
+    if (line) {
+      lines.push(line);
+    }
+    
+    return lines.map((lineText, i) => (
+      <text
+        key={i}
+        x={x}
+        y={y + i * lineHeight}
+        fill="white"
+        fontSize={fontSize}
+        fontWeight="bold"
+        textAnchor="middle"
+        dominantBaseline="middle"
+      >
+        {lineText}
+      </text>
+    ));
+  };
+
   return (
     <div className="w-full p-6 bg-[#1B1A1A] text-white rounded-lg">
       {/* Header */}
@@ -83,6 +145,12 @@ const OverlapAnalysis = () => {
             <b>Y% Average Overlap</b> in holdings.
           </span>
         </li>
+        <li className="flex gap-1">
+          <span className="text-[#FFEBA8]">•</span>
+          <span>
+            <b>Click on a fund</b> to highlight its associated stocks.
+          </span>
+        </li>
       </ul>
 
       {/* Sankey Chart */}
@@ -91,17 +159,26 @@ const OverlapAnalysis = () => {
           data={data}
           node={({ x, y, width, height, index }) => {
             const nodeColor = data.nodes[index]?.fill || "#FFBF38";
-            const isLeftNode = index < 5; // First 4 nodes are funds (left side)
+            const isLeftNode = index < 5; // First 5 nodes are funds (left side)
+            const isSelected = isLeftNode && selectedFund === index;
+            const isHighlighted = !isLeftNode && isStockHighlighted(index);
+            
+            // Apply visual effects for selected/highlighted elements
+            const boxOpacity = isSelected || isHighlighted || selectedFund === null ? 1 : 0.5;
+            const boxStroke = isSelected ? "#ffffff" : "none";
+            const boxStrokeWidth = isSelected ? 2 : 0;
+            const textOpacity = isHighlighted || selectedFund === null || isSelected ? 1 : 0.5;
             
             return (
               <g>
                 {/* Vertical color bar */}
                 <rect
-                  x={isLeftNode ? x - width/2 : x + width/2}
-                  y={y-2}
+                  x={isLeftNode ? (x - width/2) : x + width/2}
+                  y={y-5}
                   width={8}
-                  height={height+4}
+                  height={height+10}
                   fill={nodeColor}
+                  fillOpacity={boxOpacity}
                   rx={4}
                   ry={4}
                 />
@@ -109,40 +186,65 @@ const OverlapAnalysis = () => {
                 {/* Fund box - only for left nodes */}
                 {isLeftNode && (
                   <rect
-                    x={x - 140}
+                    x={x - 150}
                     y={y + height/2 - 25}
                     width={130}
                     height={50}
                     fill={nodeColor}
+                    fillOpacity={boxOpacity}
+                    stroke={boxStroke}
+                    strokeWidth={boxStrokeWidth}
                     rx={6}
                     ry={6}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => handleFundClick(index)}
                   />
                 )}
                 
                 {/* Text label */}
-                <text
-                  x={isLeftNode ? x - 75 : x + 16}
-                  y={y + height/2 + 2}
-                  fill="white"
-                  fontSize={12}
-                  fontWeight="bold"
-                  textAnchor={isLeftNode ? "middle" : "start"}
-                  dominantBaseline="middle"
-                >
-                  {isLeftNode 
-                    ? data.nodes[index].name.length > 20 
-                      ? data.nodes[index].name.substring(0, 20) + "..." 
-                      : data.nodes[index].name
-                    : data.nodes[index].name}
-                </text>
+                {isLeftNode ? (
+                  // For left nodes, use wrapped text
+                  <g 
+                    style={{ cursor: 'pointer' }} 
+                    onClick={() => handleFundClick(index)}
+                    opacity={textOpacity}
+                  >
+                    {createWrappedText(x - 85, y + height/2 - 8, data.nodes[index].name, 120, 12)}
+                  </g>
+                ) : (
+                  // For right nodes, use regular text
+                  <text
+                    x={x + 26}
+                    y={y + height/2 + 2}
+                    fill="#B0B0B0"
+                    opacity={textOpacity}
+                    fontSize={12}
+                    textAnchor="start"
+                    dominantBaseline="middle"
+                  >
+                    {data.nodes[index].name.toUpperCase()}
+                  </text>
+                )}
               </g>
             );
           }}
-          link={{
-            stroke: "#333",
-            strokeOpacity: 0.7,
-            strokeWidth: 6,
-            fill: "none"
+          link={({ source, target, sourceX, targetX, sourceY, targetY, sourceControlX, targetControlX, linkWidth, index }) => {
+            const linkData = data.links[index];
+            const isHighlighted = isLinkHighlighted(linkData);
+            const strokeOpacity = isHighlighted || selectedFund === null ? 0.7 : 0.2;
+            
+            return (
+              <path
+                d={`
+                  M${sourceX},${sourceY}
+                  C${sourceControlX},${sourceY} ${targetControlX},${targetY} ${targetX},${targetY}
+                `}
+                fill="none"
+                stroke={"#333"}
+                strokeWidth={linkWidth}
+                strokeOpacity={strokeOpacity}
+              />
+            );
           }}
           nodePadding={20}
           nodeWidth={4}
@@ -151,8 +253,6 @@ const OverlapAnalysis = () => {
           <Tooltip />
         </Sankey>
       </ResponsiveContainer>
-      
-      {/* Circular markers */}
     </div>
   );
 };
