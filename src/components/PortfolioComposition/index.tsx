@@ -2,12 +2,10 @@ import React from "react";
 
 const PortfolioComposition = () => {
   const sectorData = [
-    { name: "Financial", money: 1195000, percentage: 34 },
-    { name: "Healthcare", money: 83250, percentage: 14.5 },
-    { name: "Technology", money: 111000, percentage: 19 },
-    { name: "Consumer Goods", money: 55500, percentage: 9.5 },
-    { name: "Energy", money: 55500, percentage: 9.5 },
-    { name: "Other Sectors", money: 55500, percentage: 9.5 },
+    { name: "Financial", money: 2157662, percentage: 38.36,stocks:['HDFC',"TCS","INFOSYS"]},
+    { name: "IT", money: 2003910, percentage: 35.63,stocks:['HDFC',"TCS","INFOSYS"] },
+    { name: "Energy/Conglomerate", money: 1303288, percentage: 23.17,stocks:['HDFC',"TCS","INFOSYS"] },
+    { name: "Industrials", money: 159840, percentage: 2.84,stocks:['HDFC',"TCS","INFOSYS"] },
   ];
 
   const colors = ["#9BB0C7", "#ADB8CF", "#C6C4D8", "#DAD3E1", "#EBE2EA", "#F8F3F5"];
@@ -34,7 +32,7 @@ const PortfolioComposition = () => {
               >
                 <div>
                   <p className="text-[#2A313C] font-bold text-md">{sector.name}</p>
-                  <p className="text-sm text-[#2A313C]">₹{sector.money.toLocaleString()}</p>
+                  <p className="text-sm text-[#2A313C]">₹{sector.money.toLocaleString("en-IN")}</p>
                 </div>
                 <p className="text-[24px] font-bold text-[#2A313C]">{sector.percentage}%</p>
               </div>

@@ -10,26 +10,26 @@ const PortFolioDashboard = () => {
         {
             title:'Current',
             subtitle:'Investment Value',
-            value:'₹5,75,000',
-            return:0.6
+            value:'₹56,24,700',
+            return:11.38
         },
         {
             title:'Initial',
             subtitle:'Investment Value',
-            value:'₹5,00,000',
+            value:'₹50,50,000',
             return:15
         },
         {
             title:'Best',
             subtitle:'Performing Scheme',
-            value:'ICICI Prudential Midcap Fund',
-            return:19
+            value:'Mirae Asset Large Cap Fund',
+            return:13
         },
         {
             title:'Worst',
             subtitle:'Performing Scheme',
-            value:'Axis Flexi Cap Fund',
-            return:-5
+            value:'Axis Bluechip Fund',
+            return:9.8
         }
     ]
     const [tabValue, settabValue] = useState<number>(0)
@@ -67,12 +67,12 @@ const PortFolioDashboard = () => {
                                 {data.subtitle}
                             </text>
                         </div>
-                        <div className='flex gap-2 items-center mb-6'>
+                        {id!==1 &&<div className='flex gap-2 items-center mb-6'>
                             {data.return>0?<GrowthIcon/>:<LossIcon/>}
                             <text className={data.return>0 ?"text-[#6BBD6E]":"text-[#EC817D]"}>
                                 {data.return>0?"+":""}{data.return}%
                             </text>
-                        </div>
+                        </div>}
                     </div>
                     <div className='mt-4 pl-[14px]'>
                         {data.value}
