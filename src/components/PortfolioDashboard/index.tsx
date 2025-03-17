@@ -4,9 +4,10 @@ import React, { useEffect, useState } from 'react'
 import PerformanceMetrics from '../PerformanceMetrics'
 import OverlapAnalysis from '../OverlapAnalysis'
 import PortfolioComposition from '../PortfolioComposition'
+import axios from 'axios'
 
 const PortFolioDashboard = () => {
-    const investmentData=[
+    const [investmentData,setInvestmentData]=useState([
         {
             title:'Current',
             subtitle:'Investment Value',
@@ -31,13 +32,16 @@ const PortFolioDashboard = () => {
             value:'Axis Bluechip Fund',
             return:9.8
         }
-    ]
+    ])
     const [tabValue, settabValue] = useState<number>(0)
 
     useEffect(()=>{
         try {
             const fetchInvestmentData=async()=>{
-
+                const res=await axios.get('http://127.0.0.1:8000/auth/user-investments')
+                if(res?.data){
+                    setInvestmentData(res?.data)
+                }
             }
             fetchInvestmentData()   
         } catch (error) {
@@ -75,7 +79,7 @@ const PortFolioDashboard = () => {
                         </div>}
                     </div>
                     <div className='mt-4 pl-[14px]'>
-                        {data.value}
+                    {id<2 ?"₹"+(Number(data.value)).toLocaleString("en-IN"):data.value}
                     </div>
                 </div>
             ))}
@@ -96,7 +100,7 @@ const PortFolioDashboard = () => {
         </div>
         <div>
             {tabValue===1 &&<PortfolioComposition/>}
-            {tabValue===0?<PerformanceMetrics/>:<OverlapAnalysis/>}
+            {tabValue===0?<PerformanceMetrics investmentData={investmentData}/>:<OverlapAnalysis/>}
         </div>
     </div>
   )
