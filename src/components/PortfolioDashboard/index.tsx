@@ -11,13 +11,13 @@ const PortFolioDashboard = () => {
         {
             title:'Current',
             subtitle:'Investment Value',
-            value:'₹56,24,700',
+            value:'5624700',
             return:11.38
         },
         {
             title:'Initial',
             subtitle:'Investment Value',
-            value:'₹50,50,000',
+            value:'5050000',
             return:15
         },
         {
